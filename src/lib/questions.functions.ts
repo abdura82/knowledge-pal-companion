@@ -180,7 +180,6 @@ function clean(data: QuestionInput): QuestionInput {
 }
 
 function validate(d: QuestionInput) {
-  if (!d.question) throw new Error("Soru metni gerekli");
   if (d.question_type !== "fill" && (!d.correct_answer || !d.correct_answer.split("").every((l) => ["A", "B", "C", "D"].includes(l))))
     throw new Error("Doğru cevap A, B, C veya D olmalı");
 }

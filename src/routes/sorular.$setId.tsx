@@ -171,10 +171,10 @@ function QuestionsPage() {
     setError(null);
     setNotice(null);
     const dirty = JSON.stringify(form) !== lastSavedRef.current;
-    const hasContent = form.question.trim() !== "";
+    const hasContent = [form.question, form.option_a, form.option_b, form.option_c, form.option_d].some((v) => v.trim() !== "");
     if (dirty && hasContent) {
       setSaving(true);
-      const ok = await persist(form).finally(() => setSaving(false));
+      const ok = await persist(form, true).finally(() => setSaving(false));
       if (!ok) return;
     }
     targetRef.current = { draft: true, id: null };
@@ -184,12 +184,13 @@ function QuestionsPage() {
     lastSavedRef.current = JSON.stringify({ ...empty });
   };
 
-  const persist = async (snapshot: typeof empty) => {
+  const persist = async (snapshot: typeof empty, lenient = false) => {
     const question = snapshot.question.trim();
     const a = snapshot.option_a.trim();
     const b = snapshot.option_b.trim();
     const c = snapshot.option_c.trim();
     const d = snapshot.option_d.trim();
+    if (!lenient) {
     if (!question) {
       setError("Soru metni gerekli");
       return false;
@@ -207,6 +208,7 @@ function QuestionsPage() {
     if (type === "multiple" && !snapshot.correct_answer.split("").some((l) => filled[l])) {
       setError("Doğru cevap olarak dolu bir seçenek seçin");
       return false;
+    }
     }
     try {
       const extras = (snapshot.extra_answers ?? []).map((v) => v.trim()).filter(Boolean).slice(0, MAX_FILL_ANSWERS - 1);
@@ -406,7 +408,7 @@ function QuestionsPage() {
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold">{question.question || "Boş soru"}</span>
                       <span className="mt-0.5 block text-xs text-studio-muted">
-                        {question.question_type === "fill" ? (question.option_a.trim() ? `Boşluk · ${question.option_a}` : <span className="inline-flex items-center gap-1 text-destructive"><AlertCircle className="h-3.5 w-3.5" /> Taslak — cevap eksik</span>) : question.question_type === "truefalse" ? `D/Y · ${question.correct_answer.toUpperCase() === "A" ? "Doğru" : "Yanlış"}` : question.option_a.trim() && question.option_b.trim() ? `Doğru yanıt: ${question.correct_answer.toUpperCase()}` : <span className="inline-flex items-center gap-1 text-destructive"><AlertCircle className="h-3.5 w-3.5" /> Taslak — seçenekler eksik</span>}
+                        {!question.question.trim() ? <span className="inline-flex items-center gap-1 text-destructive"><AlertCircle className="h-3.5 w-3.5" /> Taslak — soru metni eksik</span> : question.question_type === "fill" ? (question.option_a.trim() ? `Boşluk · ${question.option_a}` : <span className="inline-flex items-center gap-1 text-destructive"><AlertCircle className="h-3.5 w-3.5" /> Taslak — cevap eksik</span>) : question.question_type === "truefalse" ? `D/Y · ${question.correct_answer.toUpperCase() === "A" ? "Doğru" : "Yanlış"}` : question.option_a.trim() && question.option_b.trim() ? `Doğru yanıt: ${question.correct_answer.toUpperCase()}` : <span className="inline-flex items-center gap-1 text-destructive"><AlertCircle className="h-3.5 w-3.5" /> Taslak — seçenekler eksik</span>}
                       </span>
                     </span>
                   </Button>
