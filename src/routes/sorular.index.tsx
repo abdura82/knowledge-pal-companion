@@ -64,78 +64,71 @@ function SetsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 sm:px-8">
-      <div className="mx-auto w-full max-w-5xl">
+    <main className="relative min-h-screen overflow-hidden bg-studio-bg font-studio text-studio-ink">
+      <div className="pointer-events-none absolute -right-40 -top-40 h-[420px] w-[420px] rounded-full bg-studio-blue/25 blur-[120px]" />
+      <div className="relative mx-auto w-full max-w-6xl px-5 py-8 sm:px-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold tracking-[0.35em] text-muted-foreground">
-              SORU SETLERİM
+            <p className="text-xs font-bold uppercase tracking-[0.35em] text-studio-yellow">
+              Soru setlerim
             </p>
-            <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-foreground">
-              HANGİ SETİ SUNACAKSIN?
+            <h1 className="mt-3 font-studio-display text-4xl tracking-tight sm:text-5xl">
+              Hangi seti sunacaksın?
             </h1>
           </div>
           <Link
             to="/"
-            className="rounded-xl border-2 border-border bg-panel px-4 py-3 text-sm font-bold text-foreground hover:bg-muted"
+            className="rounded-xl border border-studio-line bg-studio-surface/70 px-4 py-2.5 text-sm font-semibold text-studio-ink backdrop-blur transition hover:bg-studio-elevated"
           >
-            ANA SAYFA
+            ← Ana sayfa
           </Link>
         </header>
 
-        <section className="mt-6 rounded-[var(--radius)] bg-panel p-6 shadow-[var(--shadow-panel)]">
-          <h2 className="text-lg font-extrabold text-foreground">YENİ SORU SETİ OLUŞTUR</h2>
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+        <section className="mt-8 rounded-3xl border border-studio-line bg-studio-surface/70 p-6 backdrop-blur-xl">
+          <h2 className="text-sm font-bold uppercase tracking-[0.25em] text-studio-muted">
+            Yeni soru seti oluştur
+          </h2>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && title.trim() && void newSet()}
               placeholder="Örn: 5. Sınıf Fen Bilimleri"
-              className="flex-1 rounded-2xl border-2 border-border bg-background px-4 py-3 text-base font-semibold text-foreground outline-none focus:border-team1"
+              className="flex-1 rounded-2xl border border-studio-line bg-studio-bg px-5 py-3.5 text-base font-semibold text-studio-ink outline-none transition placeholder:text-studio-muted/60 focus:border-studio-blue focus:ring-4 focus:ring-studio-blue/25"
             />
             <button
               onClick={newSet}
               disabled={!title.trim() || busy === "new"}
-              className="rounded-xl bg-team1 px-6 py-3 text-sm font-bold text-panel disabled:opacity-40"
+              className="rounded-2xl bg-studio-yellow px-6 py-3.5 font-studio-display text-sm text-studio-bg transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
             >
-              OLUŞTUR VE SORU EKLE
+              + Oluştur ve soru ekle
             </button>
           </div>
         </section>
 
-        {error && <p className="mt-4 text-sm font-semibold text-destructive">{error}</p>}
+        {error && (
+          <p className="mt-4 rounded-xl border border-studio-danger/40 bg-studio-danger/10 px-4 py-3 text-sm font-semibold text-studio-danger">
+            {error}
+          </p>
+        )}
 
-        <section className="mt-6 grid gap-4 sm:grid-cols-2">
-          {sets.isLoading && (
-            <p className="text-sm font-semibold text-muted-foreground">Setler yükleniyor...</p>
-          )}
+        <section className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {sets.isLoading &&
+            [0, 1, 2].map((i) => (
+              <div key={i} className="h-48 animate-pulse rounded-3xl bg-studio-surface" />
+            ))}
           {sets.data?.length === 0 && (
-            <p className="text-sm font-semibold text-muted-foreground">Henüz set yok.</p>
+            <p className="text-sm text-studio-muted">Henüz set yok. Yukarıdan ilkini oluştur.</p>
           )}
           {(sets.data ?? []).map((s) => (
             <article
               key={s.id}
-              className="flex flex-col rounded-[var(--radius)] bg-panel p-5 shadow-[var(--shadow-panel)]"
+              className="studio-enter group flex flex-col rounded-3xl border border-studio-line bg-studio-surface p-6 transition hover:-translate-y-1 hover:border-studio-blue/60 hover:shadow-[0_24px_60px_-24px_var(--studio-blue)]"
             >
-              <h3 className="text-xl font-extrabold text-foreground">{s.title}</h3>
-              <p className="mt-1 text-sm font-semibold text-muted-foreground">
-                {s.questionCount} soru
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <button
-                  onClick={() => present(s.id)}
-                  disabled={s.questionCount === 0 || busy === s.id}
-                  className="rounded-xl bg-foreground px-4 py-2 text-sm font-bold text-background disabled:opacity-40"
-                >
-                  {busy === s.id ? "HAZIRLANIYOR..." : "SUN"}
-                </button>
-                <Link
-                  to="/sorular/$setId"
-                  params={{ setId: s.id }}
-                  className="rounded-xl border-2 border-border px-4 py-2 text-sm font-bold text-foreground hover:bg-muted"
-                >
-                  SORULARI DÜZENLE
-                </Link>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-studio-blue to-studio-yellow font-studio-display text-lg text-studio-bg">
+                  {s.title.slice(0, 2).toLocaleUpperCase("tr")}
+                </div>
                 <button
                   onClick={async () => {
                     if (!confirm(`"${s.title}" seti ve tüm soruları silinsin mi?`)) return;
@@ -146,10 +139,30 @@ function SetsPage() {
                       setError(e instanceof Error ? e.message : "Silinemedi");
                     }
                   }}
-                  className="rounded-xl border-2 border-destructive px-4 py-2 text-sm font-bold text-destructive"
+                  className="rounded-lg px-2.5 py-1 text-xs font-semibold text-studio-muted transition hover:bg-studio-danger/15 hover:text-studio-danger"
                 >
-                  SİL
+                  Sil
                 </button>
+              </div>
+              <h3 className="mt-5 line-clamp-2 font-studio-display text-xl">{s.title}</h3>
+              <p className="mt-1 text-sm text-studio-muted">
+                <span className="font-bold text-studio-ink">{s.questionCount}</span> soru
+              </p>
+              <div className="mt-6 flex gap-2 pt-2">
+                <button
+                  onClick={() => present(s.id)}
+                  disabled={s.questionCount === 0 || busy === s.id}
+                  className="flex-1 rounded-xl bg-studio-yellow px-4 py-2.5 font-studio-display text-sm text-studio-bg transition hover:brightness-105 disabled:opacity-40"
+                >
+                  {busy === s.id ? "Hazırlanıyor..." : "▶ Sun"}
+                </button>
+                <Link
+                  to="/sorular/$setId"
+                  params={{ setId: s.id }}
+                  className="flex-1 rounded-xl border border-studio-line bg-studio-elevated px-4 py-2.5 text-center text-sm font-semibold text-studio-ink transition hover:border-studio-blue"
+                >
+                  Düzenle
+                </Link>
               </div>
             </article>
           ))}
