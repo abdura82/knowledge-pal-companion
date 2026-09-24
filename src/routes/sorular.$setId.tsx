@@ -190,12 +190,12 @@ function QuestionsPage() {
     const b = snapshot.option_b.trim();
     const c = snapshot.option_c.trim();
     const d = snapshot.option_d.trim();
+    const type = snapshot.question_type;
     if (!lenient) {
     if (!question) {
       setError("Soru metni gerekli");
       return false;
     }
-    const type = snapshot.question_type;
     if (type === "fill" && !a) {
       setError("Doğru cevabı yazın");
       return false;
