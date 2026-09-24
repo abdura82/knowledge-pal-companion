@@ -252,8 +252,12 @@ function QuestionsPage() {
         setTitleTouched(false);
         void setInfo.refetch();
       }
-      const saved = await persist(form);
-      if (!saved) return;
+      const hasContent = [form.question, form.option_a, form.option_b, form.option_c, form.option_d].some((v) => v.trim() !== "");
+      const dirty = JSON.stringify(form) !== lastSavedRef.current;
+      if (dirty && hasContent) {
+        const saved = await persist(form, true);
+        if (!saved) return;
+      }
       setNotice("Tüm değişiklikler kaydedildi");
       window.setTimeout(() => setNotice(null), 2000);
     } catch (caught) {
